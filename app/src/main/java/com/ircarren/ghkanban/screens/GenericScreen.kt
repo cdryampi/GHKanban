@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.google.accompanist.pager.*
 import com.ircarren.ghkanban.viewModel.RepoLocalViewModel
 import com.ircarren.ghkanban.models.Repository
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun mainContainer(modifier: Modifier = Modifier, application: Application) {
+fun mainContainer(modifier: Modifier = Modifier, application: Application, navController: NavController) {
     Column(modifier = Modifier.fillMaxWidth()) {
         GenericTab(application = application)
     }
@@ -109,15 +110,12 @@ fun Tabs(pagerState: PagerState) {
 fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, application: Application) {
 
     val username = "cdryampi"
-    val viewModel: RepoLocalViewModel = RepoLocalViewModel(application)
+    val viewModel = RepoLocalViewModel(application)
     val myList: List<String> by viewModel.repoIdsLocal.observeAsState(listOf())
     viewModel.loadRepoLocal()
 
     val repos by viewModel.repos.observeAsState(emptyList())
 
-    LaunchedEffect(username) {
-        viewModel.getReposForUser(username)
-    }
 
     HorizontalPager(state = pagerState) { page ->
         when (page) {

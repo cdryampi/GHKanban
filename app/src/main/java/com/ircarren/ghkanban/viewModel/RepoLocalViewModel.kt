@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import com.ircarren.ghkanban.controllers.GithubRepository
 import com.ircarren.ghkanban.models.Repository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -28,15 +29,17 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
     val repos: LiveData<List<Repository>> = _repos
 
 
-
+    init {
+        getReposForUser()
+    }
 
     // cosas de github
     fun getReposForUser(username: String="cdryampi") {
         viewModelScope.launch {
             _repos.value = repository.getReposForUser(username)
+
         }
     }
-
 
 
     // Guarda el repositorio en el shared preferences
