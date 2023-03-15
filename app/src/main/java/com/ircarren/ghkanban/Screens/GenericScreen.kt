@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.*
+import com.ircarren.ghkanban.R
 import com.ircarren.ghkanban.ViewModel.RepoLocal
-import com.ircarren.ghkanban.models.Repo
-import com.ircarren.ghkanban.providers.RepoProvider
+import com.ircarren.ghkanban.models.Repository
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -107,12 +108,21 @@ fun Tabs(pagerState: PagerState) {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, application: Application) {
+
+    val username = "cdryampi"
     val viewModel: RepoLocal = RepoLocal(application)
     val myList: List<String> by viewModel.repoIdsLocal.observeAsState(listOf())
     viewModel.loadRepoLocal()
+
+    val repos by viewModel.repos.observeAsState(emptyList())
+
+    LaunchedEffect(username) {
+        viewModel.getReposForUser(username)
+    }
+
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0 -> TabContentScreenList(data = RepoProvider.repos, true, viewModel)
+            0 -> TabContentScreenList(data = repos, true, viewModel)
             1 -> TabContentScreenListLocal(data = myList.toList(), false,viewModel)
         }
 
@@ -130,21 +140,10 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
             .verticalScroll(rememberScrollState())
     ) {
         data.forEach {
-            Card(modifier = Modifier.fillMaxWidth().height(100.dp), shape = MaterialTheme.shapes.medium, onClick = {}){
-                Row() {
-
-                    Text(text = it)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = Color.DarkGray, modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .fillMaxSize()
-                        .clickable {
-                            viewModel.deleteOneRefRepoLocal(it)
-                        })
-                }
-            }
 
 
+            val localRepo = Repository(it)
+            CardRepo(localRepo, b, viewModel)
             genericSpacer()
         }
     }
@@ -152,7 +151,7 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
 
 
 @Composable
-fun TabContentScreenList(data: List<Repo>, isFavorite: Boolean, viewModel: RepoLocal) {
+fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel: RepoLocal) {
     genericSpacer()
     Column(
         modifier = Modifier
@@ -172,7 +171,7 @@ fun TabContentScreenList(data: List<Repo>, isFavorite: Boolean, viewModel: RepoL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardRepo(repo: Repo, isFavorite: Boolean, viewModel: RepoLocal){
+fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocal){
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -180,10 +179,10 @@ fun CardRepo(repo: Repo, isFavorite: Boolean, viewModel: RepoLocal){
     ) {
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
 
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(16.dp).weight(1f)) {
                 repo.name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
                 Spacer(modifier = Modifier.height(16.dp))
-                repo.description?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
+                Text(text = "yampi", style = MaterialTheme.typography.bodyLarge)
             }
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -193,14 +192,14 @@ fun CardRepo(repo: Repo, isFavorite: Boolean, viewModel: RepoLocal){
                             .align(Alignment.Center)
                             .fillMaxSize()
                             .clickable {
-                                viewModel.saveRepoLocal(repo)
+                               viewModel.saveRepoLocal(repo.name)
                             })
                     }else{
                         Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = Color.DarkGray, modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxSize()
                             .clickable {
-                                //viewModel.deleteOneRefRepoLocal(repo)
+                                viewModel.deleteOneRefRepoLocal(repo.name)
                             })
                     }
                 }

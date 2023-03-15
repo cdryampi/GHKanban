@@ -4,8 +4,12 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
+import com.ircarren.ghkanban.Controllers.GithubRepository
 import com.ircarren.ghkanban.models.Repo
+import com.ircarren.ghkanban.models.Repository
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -14,15 +18,36 @@ class RepoLocal(application: Application) : ViewModel() {
 
     private val sharedPref = PreferenceManager.getDefaultSharedPreferences(application)
 
+
+    // Repositorio local guardado
     private val _repoIdsLocal = MutableLiveData<List<String>>()
     val repoIdsLocal: LiveData<List<String>> = _repoIdsLocal
+
+
     private val mapRepo: MutableMap<String, String> = mutableMapOf()
 
+    // Repositorio
+    private val repository = GithubRepository()
+    private val _repos = MutableLiveData<List<Repository>>()
+    val repos: LiveData<List<Repository>> = _repos
+
+
+
+
+    // cosas de github
+    fun getReposForUser(username: String="cdryampi") {
+        viewModelScope.launch {
+            _repos.value = repository.getReposForUser(username)
+        }
+    }
+
+
+
     // Guarda el repositorio en el shared preferences
-    fun saveRepoLocal(repo: Repo) {
+    fun saveRepoLocal(repo: String) {
 
         _repoIdsLocal.value =
-            (_repoIdsLocal.value?.plus(repo.name) ?: listOf(repo.name)) as List<String>?
+            (_repoIdsLocal.value?.plus(repo) ?: listOf(repo)) as List<String>?
         _repoIdsLocal.value?.forEach {
             if (it != null) {
                 mapRepo[it] = Json.encodeToString(it)
