@@ -1,4 +1,4 @@
-package com.ircarren.ghkanban.Screens
+package com.ircarren.ghkanban.screens
 
 import android.app.Application
 import androidx.compose.foundation.background
@@ -22,8 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.*
-import com.ircarren.ghkanban.R
-import com.ircarren.ghkanban.ViewModel.RepoLocal
+import com.ircarren.ghkanban.viewModel.RepoLocalViewModel
 import com.ircarren.ghkanban.models.Repository
 import kotlinx.coroutines.launch
 
@@ -110,7 +109,7 @@ fun Tabs(pagerState: PagerState) {
 fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, application: Application) {
 
     val username = "cdryampi"
-    val viewModel: RepoLocal = RepoLocal(application)
+    val viewModel: RepoLocalViewModel = RepoLocalViewModel(application)
     val myList: List<String> by viewModel.repoIdsLocal.observeAsState(listOf())
     viewModel.loadRepoLocal()
 
@@ -131,8 +130,8 @@ fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, applicati
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLocal) {
-    genericSpacer()
+fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLocalViewModel) {
+    GenericSpacer()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,15 +143,15 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
 
             val localRepo = Repository(it)
             CardRepo(localRepo, b, viewModel)
-            genericSpacer()
+            GenericSpacer()
         }
     }
 }
 
 
 @Composable
-fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel: RepoLocal) {
-    genericSpacer()
+fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel: RepoLocalViewModel) {
+    GenericSpacer()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -161,7 +160,7 @@ fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel:
     ) {
         data.forEach {
             CardRepo(it, isFavorite, viewModel)
-            genericSpacer()
+            GenericSpacer()
         }
     }
 }
@@ -171,7 +170,7 @@ fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel:
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocal){
+fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewModel){
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -210,7 +209,7 @@ fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocal){
 }
 
 @Composable
-fun genericSpacer() {
+fun GenericSpacer() {
     Spacer(modifier = Modifier.height(16.dp))
 }
 

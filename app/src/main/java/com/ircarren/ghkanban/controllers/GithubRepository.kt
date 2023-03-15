@@ -1,6 +1,6 @@
-package com.ircarren.ghkanban.Controllers
+package com.ircarren.ghkanban.controllers
 
-import com.ircarren.ghkanban.Interfaces.GithubApiListReposFromUserName
+import com.ircarren.ghkanban.interfaces.GithubApiListReposFromUserName
 import com.ircarren.ghkanban.models.Repository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -1,20 +1,16 @@
-package com.ircarren.ghkanban.ViewModel
+package com.ircarren.ghkanban.viewModel
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
-import com.ircarren.ghkanban.Controllers.GithubRepository
-import com.ircarren.ghkanban.models.Repo
+import com.ircarren.ghkanban.controllers.GithubRepository
 import com.ircarren.ghkanban.models.Repository
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class RepoLocal(application: Application) : ViewModel() {
+class RepoLocalViewModel(application: Application) : AndroidViewModel(application) {
 
     private val sharedPref = PreferenceManager.getDefaultSharedPreferences(application)
 

@@ -12,8 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.preference.PreferenceManager
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.ircarren.ghkanban.Screens.GenericTab
-import com.ircarren.ghkanban.Screens.mainContainer
+import com.ircarren.ghkanban.screens.GenericTab
 import com.ircarren.ghkanban.ui.theme.GHKanbanTheme
 
 class MainActivity : ComponentActivity() {

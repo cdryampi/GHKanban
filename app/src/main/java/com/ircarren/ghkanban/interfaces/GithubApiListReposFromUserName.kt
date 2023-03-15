@@ -1,4 +1,4 @@
-package com.ircarren.ghkanban.Interfaces
+package com.ircarren.ghkanban.interfaces
 
 import com.ircarren.ghkanban.models.Repository
 import retrofit2.http.GET
