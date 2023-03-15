@@ -1,4 +1,13 @@
 package com.ircarren.ghkanban.models
 
-data class Repo( val name: String, val description: String, val language: String, val token:String ?= null)
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Repo(
+    @SerialName("name") val name: String? = null,
+    @SerialName("description") val description: String? = null,
+    @SerialName("language") val language: String? = null,
+    @SerialName("token") val token: String? = null
+)
 // clase que se encarga de guardar los datos de un repositorio

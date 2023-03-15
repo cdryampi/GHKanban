@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.preference.PreferenceManager
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.ircarren.ghkanban.Screens.GenericTab
 import com.ircarren.ghkanban.Screens.mainContainer
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         @OptIn(ExperimentalPagerApi::class)
         super.onCreate(savedInstanceState)
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         setContent {
             GHKanbanTheme {
                 // A surface container using the 'background' color from the theme
@@ -27,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GenericTab()
+                    GenericTab(application = this.application)
                 }
             }
         }
