@@ -1,11 +1,11 @@
-package com.ircarren.ghkanban.viewModel
+package com.ircarren.ghkanban.ui.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ircarren.ghkanban.controllers.GithubRepository
-import com.ircarren.ghkanban.enums.IssueStatus
+import com.ircarren.ghkanban.data.controllers.GithubRepository
+import com.ircarren.ghkanban.data.enums.IssueStatus
 import com.ircarren.ghkanban.models.Issue
 import kotlinx.coroutines.launch
 
@@ -34,8 +34,17 @@ class IssueViewModel(username: String, repoName: String ): ViewModel() {
         issue.status = IssueStatus.NEXT
         _issueBacklogLocal.value =
             (_issueBacklogLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
+
+        if (_issueBacklogLocal.value?.contains(issue) == true) {
+            _issueBacklogLocal.value =
+                (_issueBacklogLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
+        }
+
         _issueNextLocal.value =
             (_issueNextLocal.value?.plus(issue) ?: listOf(issue)) as List<Issue>?
+
+        // bug de duplicados en el listado cuando se cambia de estado desde el backlog a next
+        _issueNextLocal.value = _issueNextLocal.value?.distinct()
         println("changeToNext")
     }
     fun changeToInProgress(issue: Issue) {

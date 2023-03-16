@@ -1,4 +1,4 @@
-package com.ircarren.ghkanban.enums
+package com.ircarren.ghkanban.data.enums
 
 enum class IssueStatus {
     BACKLOG,

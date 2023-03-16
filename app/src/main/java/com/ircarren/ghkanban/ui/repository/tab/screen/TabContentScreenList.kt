@@ -1,0 +1,31 @@
+package com.ircarren.ghkanban.ui.repository.tab.screen
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.ircarren.ghkanban.models.Repository
+import com.ircarren.ghkanban.ui.repository.card.CardRepo
+import com.ircarren.ghkanban.ui.screens.GenericSpacer
+import com.ircarren.ghkanban.ui.viewModel.RepoLocalViewModel
+
+@Composable
+fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel: RepoLocalViewModel, navController: NavController) {
+    GenericSpacer()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        data.forEach {
+            CardRepo(it, isFavorite, viewModel, navController)
+            GenericSpacer()
+        }
+    }
+}

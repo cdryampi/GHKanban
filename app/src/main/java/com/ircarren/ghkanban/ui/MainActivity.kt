@@ -1,37 +1,22 @@
-package com.ircarren.ghkanban
+package com.ircarren.ghkanban.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgs
 import androidx.navigation.navArgument
-import androidx.preference.PreferenceManager
 import com.google.accompanist.pager.ExperimentalPagerApi
-
-import com.ircarren.ghkanban.screens.GenericTab
-import com.ircarren.ghkanban.screens.IssuesScreen
-import com.ircarren.ghkanban.screens.ReposScreen
-import com.ircarren.ghkanban.screens.mainContainer
+import com.ircarren.ghkanban.ui.screens.IssuesScreen
+import com.ircarren.ghkanban.ui.screens.ReposScreen
 import com.ircarren.ghkanban.ui.theme.GHKanbanTheme
 
 class MainActivity : ComponentActivity() {

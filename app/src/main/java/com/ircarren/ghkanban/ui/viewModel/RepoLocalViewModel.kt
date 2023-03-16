@@ -1,9 +1,9 @@
-package com.ircarren.ghkanban.viewModel
+package com.ircarren.ghkanban.ui.viewModel
 
 import android.app.Application
 import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
-import com.ircarren.ghkanban.controllers.GithubRepository
+import com.ircarren.ghkanban.data.controllers.GithubRepository
 import com.ircarren.ghkanban.models.Repository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -86,7 +86,9 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
     fun deleteOneRefRepoLocal(RemoveRepo: String) {
         _repoIdsLocal.value = _repoIdsLocal.value?.minus(RemoveRepo)
         if (_repoIdsLocal.value == null) {
+            mapRepo.clear()
             _repoIdsLocal.value?.forEach {
+
                 if (it != null) {
                     mapRepo[it] = Json.encodeToString(it)
                 }
