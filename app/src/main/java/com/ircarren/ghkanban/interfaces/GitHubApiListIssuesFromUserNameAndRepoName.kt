@@ -5,9 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface GitHubApiListIssuesFromUserNameAndRepoName {
-    @GET("/repos/{username}/{repo}/issues")
+    @GET("/repos/{owner}/{repo}/issues")
     suspend fun getIssuesForUserAndRepo(
-        @Path("username") username: String,
+        @Path("owner") username: String,
         @Path("repo") repo: String
     ): List<Issue>
 }

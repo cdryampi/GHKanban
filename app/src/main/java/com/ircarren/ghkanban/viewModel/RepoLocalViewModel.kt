@@ -31,12 +31,20 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
 
     init {
         getReposForUser()
+        loadRepoLocal()
     }
 
     // cosas de github
     fun getReposForUser(username: String="cdryampi") {
         viewModelScope.launch {
-            _repos.value = repository.getReposForUser(username)
+            try {
+                val deferred = async {
+                    repository.getReposForUser(username)
+                }
+                _repos.value = deferred.await()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
         }
     }
@@ -57,6 +65,8 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun loadRepoLocal() {
+
+        // repository en abtraido
         val json = sharedPref.getString("RepoIdsLocal", "[]")
 
         if (json != null && json != "[]") {

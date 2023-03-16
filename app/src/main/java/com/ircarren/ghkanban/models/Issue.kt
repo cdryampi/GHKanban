@@ -1,7 +1,11 @@
 package com.ircarren.ghkanban.models
 
+import com.ircarren.ghkanban.enums.IssueStatus
+
 data class Issue(
-    val title: String,
-    val htmlUrl: String,
-    val state: String,
+    val title: String ? = null,
+    val htmlUrl: String ? = null,
+    val state: String ? = null,
+    val body: String ? = null,
+    var status: IssueStatus ? = IssueStatus.BACKLOG
 )

@@ -12,7 +12,7 @@ import com.ircarren.ghkanban.MainActivity
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ReposScreen(modifier: Modifier = Modifier, navController: NavController, application: Application){
+fun ReposScreen(modifier: Modifier = Modifier, navController: NavController){
 
-    mainContainer(application = application, navController = navController)
+    mainContainer(navController = navController)
 }

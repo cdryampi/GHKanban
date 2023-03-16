@@ -1,11 +1,8 @@
 package com.ircarren.ghkanban.screens
 
 import android.app.Application
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TopAppBar
@@ -13,33 +10,51 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.*
+import com.ircarren.ghkanban.R
 import com.ircarren.ghkanban.viewModel.RepoLocalViewModel
 import com.ircarren.ghkanban.models.Repository
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun mainContainer(modifier: Modifier = Modifier, application: Application, navController: NavController) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        GenericTab(application = application)
+fun mainContainer(modifier: Modifier = Modifier, navController: NavController) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        GenericTab(navController = navController)
     }
 }
 
 
+
+
 @Composable
 fun Title(modifier: Modifier = Modifier) {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Text(text = "GH Kanban", style = MaterialTheme.typography.titleLarge, color = Color.White)
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+            Text(text = "GH Kanban", style = MaterialTheme.typography.titleLarge, color = Color.White)
+            // image from static resources
+            Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray).height(80.dp), contentAlignment = Alignment.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(55.dp)
+                )
+            }
+
+        }
+
     }
 }
 
@@ -47,21 +62,22 @@ fun Title(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalPagerApi::class)
 @ExperimentalPagerApi
 @Composable
-fun GenericTab(modifier: Modifier = Modifier, application: Application) {
+fun GenericTab(modifier: Modifier = Modifier, navController: NavController) {
     val pagerState = rememberPagerState(pageCount = 2)
     Column(modifier = Modifier.background(Color.White)) {
         TopAppBar(backgroundColor = Color.DarkGray) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(250.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
+
             ) {
                 Title()
             }
 
         }
-        Tabs(pagerState = pagerState)
-        TabsContent(pagerState = pagerState, application = application)
+        genericTabs(pagerState = pagerState)
+        TabsContent(pagerState = pagerState, navController = navController)
 
     }
 
@@ -69,7 +85,7 @@ fun GenericTab(modifier: Modifier = Modifier, application: Application) {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun Tabs(pagerState: PagerState) {
+fun genericTabs(pagerState: PagerState) {
     val list = listOf("Explore" to Icons.Default.List, "Local" to Icons.Default.Home)
     val scope = rememberCoroutineScope()
     TabRow(
@@ -103,24 +119,23 @@ fun Tabs(pagerState: PagerState) {
             )
         }
     }
-
 }
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, application: Application) {
+fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, navController: NavController) {
 
     val username = "cdryampi"
-    val viewModel = RepoLocalViewModel(application)
+    val viewModel = viewModel<RepoLocalViewModel>()
     val myList: List<String> by viewModel.repoIdsLocal.observeAsState(listOf())
-    viewModel.loadRepoLocal()
 
     val repos by viewModel.repos.observeAsState(emptyList())
 
 
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0 -> TabContentScreenList(data = repos, true, viewModel)
-            1 -> TabContentScreenListLocal(data = myList.toList(), false,viewModel)
+            0 -> TabContentScreenList(data = repos, true, viewModel, navController = navController)
+            1 -> TabContentScreenListLocal(data = myList.toList(), false,viewModel, navController = navController)
+
         }
 
     }
@@ -128,7 +143,7 @@ fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, applicati
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLocalViewModel) {
+fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLocalViewModel, navController: NavController) {
     GenericSpacer()
     Column(
         modifier = Modifier
@@ -140,7 +155,7 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
 
 
             val localRepo = Repository(it)
-            CardRepo(localRepo, b, viewModel)
+            CardRepo(localRepo, b, viewModel, navController)
             GenericSpacer()
         }
     }
@@ -148,7 +163,7 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
 
 
 @Composable
-fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel: RepoLocalViewModel) {
+fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel: RepoLocalViewModel, navController: NavController) {
     GenericSpacer()
     Column(
         modifier = Modifier
@@ -157,7 +172,7 @@ fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel:
             .verticalScroll(rememberScrollState())
     ) {
         data.forEach {
-            CardRepo(it, isFavorite, viewModel)
+            CardRepo(it, isFavorite, viewModel, navController)
             GenericSpacer()
         }
     }
@@ -168,15 +183,20 @@ fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel:
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewModel){
+fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewModel, navController: NavController){
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        onClick = {}
+        onClick = {
+            navController.navigate("issues/${"cdryampi"}/${repo.name}")
+            //navController.navigate("issues")
+        }
     ) {
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
 
-            Column(modifier = Modifier.padding(16.dp).weight(1f)) {
+            Column(modifier = Modifier
+                .padding(16.dp)
+                .weight(1f)) {
                 repo.name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = "yampi", style = MaterialTheme.typography.bodyLarge)
@@ -189,7 +209,7 @@ fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewMode
                             .align(Alignment.Center)
                             .fillMaxSize()
                             .clickable {
-                               viewModel.saveRepoLocal(repo.name)
+                                viewModel.saveRepoLocal(repo.name)
                             })
                     }else{
                         Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = Color.DarkGray, modifier = Modifier
@@ -197,6 +217,7 @@ fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewMode
                             .fillMaxSize()
                             .clickable {
                                 viewModel.deleteOneRefRepoLocal(repo.name)
+                                println("delete")
                             })
                     }
                 }
