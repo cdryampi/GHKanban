@@ -57,11 +57,10 @@ fun IssuesTabContentScreenList(
 
             CardIssue(
                 issue = data[index],
-                viewModel = viewModel,
                 showNext = showNext,
                 showPrev = showPrev,
                 onNextStateRequest = { viewModel.changeToNext(it) },
-                onPrevStateRequest = { viewModel.changeToNext(it) }
+                onPrevStateRequest = { viewModel.changeToPrev(it) }
             )
 
 

@@ -17,7 +17,14 @@ import com.ircarren.ghkanban.ui.viewModel.IssueViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardIssue(modifier: Modifier = Modifier, issue: Issue, viewModel: IssueViewModel, showNext:Boolean, showPrev:Boolean, onNextStateRequest: (Issue) -> Unit, onPrevStateRequest: (Issue) -> Unit) {
+fun CardIssue(
+    modifier: Modifier = Modifier,
+    issue: Issue,
+    showNext: Boolean,
+    showPrev: Boolean,
+    onNextStateRequest: (Issue) -> Unit,
+    onPrevStateRequest: (Issue) -> Unit
+) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -46,85 +53,30 @@ fun CardIssue(modifier: Modifier = Modifier, issue: Issue, viewModel: IssueViewM
                     )
                 }
             }
-
             Column(modifier = Modifier.padding(16.dp)) {
+                if (showNext) {
 
-                when (issue.status?.name) {
+                    Icon(imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        tint = Color.DarkGray,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable {
+                                onNextStateRequest(issue)
+                            }
+                    )
 
-                    IssueStatus.BACKLOG.name -> {
-                        Icon(imageVector = Icons.Default.ArrowForward,
-                            contentDescription = null,
-                            tint = Color.DarkGray,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clickable {
-                                    onNextStateRequest(issue)
-                                }
-
-                        )
-                    }
-
-                    IssueStatus.NEXT.name -> {
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            Icon(imageVector = Icons.Default.ArrowForward,
-                                contentDescription = null,
-                                tint = Color.DarkGray,
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable {
-                                        viewModel.changeToInProgress(issue)
-                                    })
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Icon(imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null,
-                                tint = Color.DarkGray,
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable {
-                                        viewModel.changetoBacklog(issue)
-                                    })
-                        }
-
-                    }
-
-                    IssueStatus.IN_PROGRESS.name -> {
-                        Column() {
-                            Icon(imageVector = Icons.Default.ArrowForward,
-                                contentDescription = null,
-                                tint = Color.DarkGray,
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable {
-                                        viewModel.changeToDone(issue)
-                                    })
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Icon(imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null,
-                                tint = Color.DarkGray,
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .clickable {
-                                        viewModel.changeToNextInProgress(issue)
-                                    })
-                        }
-
-
-                    }
-
-                    IssueStatus.DONE.name -> {
-                        Icon(imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-                            tint = Color.DarkGray,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clickable {
-                                    viewModel.changeToDoneInProgress(issue)
-                                })
-                    }
-
+                }
+                if (showPrev) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Icon(imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        tint = Color.DarkGray,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable {
+                                onPrevStateRequest(issue)
+                            })
                 }
             }
         }
