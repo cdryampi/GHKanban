@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import com.ircarren.ghkanban.data.controllers.GithubRepository
+import com.ircarren.ghkanban.data.controllers.SharedLocalStorageManager
 import com.ircarren.ghkanban.models.Repository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -13,15 +14,13 @@ import kotlinx.serialization.json.Json
 
 class RepoLocalViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val sharedPref = PreferenceManager.getDefaultSharedPreferences(application)
+    private val SharedPref = SharedLocalStorageManager(application)
 
 
     // Repositorio local guardado
     private val _repoIdsLocal = MutableLiveData<List<String>>()
     val repoIdsLocal: LiveData<List<String>> = _repoIdsLocal
 
-
-    private val mapRepo: MutableMap<String, String> = mutableMapOf()
 
     // Repositorio
     private val repository = GithubRepository()
@@ -51,58 +50,19 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
 
 
     // Guarda el repositorio en el shared preferences
-    fun saveRepoLocal(repo: String) {
-
-        _repoIdsLocal.value =
-            (_repoIdsLocal.value?.plus(repo) ?: listOf(repo)) as List<String>?
-        _repoIdsLocal.value?.forEach {
-            if (it != null) {
-                mapRepo[it] = Json.encodeToString(it)
-            }
-        }
-        sharedPref.edit().putString("RepoIdsLocal", Json.encodeToString(mapRepo)).apply()
-        loadRepoLocal()
+     fun saveRepoLocal(repo: String) {
+        SharedPref.saveRepoLocal(repo)
+        _repoIdsLocal.value = SharedPref.getRepoLocal()
     }
 
-    fun loadRepoLocal() {
-
-        // repository en abtraido
-        val json = sharedPref.getString("RepoIdsLocal", "[]")
-
-        if (json != null && json != "[]") {
-            // json
-            val map = Json.decodeFromString<Map<String, String>>(json)
-            map.forEach {
-                _repoIdsLocal.value =
-                    (_repoIdsLocal.value?.plus(it.key) ?: listOf(it.key)) as List<String>?
-            }
-            map.values.distinct()
-        } else {
-
-        }
-
-        //_repoIdsLocal.value = json?.let { Json.decodeFromString(it) }
-        // repos duplicados
-
-        _repoIdsLocal.value = _repoIdsLocal.value?.distinct()
-
+     private fun loadRepoLocal() {
+        SharedPref.loadRepoLocal()
+        _repoIdsLocal.value = SharedPref.getRepoLocal()
     }
 
-    fun deleteOneRefRepoLocal(RemoveRepo: String) {
-        _repoIdsLocal.value = _repoIdsLocal.value?.distinct()
-        _repoIdsLocal.value = _repoIdsLocal.value?.minus(RemoveRepo)
-        if (_repoIdsLocal.value == null) {
-            _repoIdsLocal.value?.forEach {
-
-                if (it != null) {
-                    mapRepo[it] = Json.encodeToString(it)
-                }
-            }
-        }
-        sharedPref.edit().remove("RepoIdsLocal").apply()
-        mapRepo.values.distinct()
-        sharedPref.edit().putString("RepoIdsLocal", Json.encodeToString(mapRepo)).apply()
-        loadRepoLocal()
+     fun deleteOneRefRepoLocal(RemoveRepo: String) {
+        SharedPref.deleteOneRefRepoLocal(RemoveRepo)
+        _repoIdsLocal.value = SharedPref.getRepoLocal()
     }
 
 }
