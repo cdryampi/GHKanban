@@ -1,4 +1,4 @@
-package com.ircarren.ghkanban.providers
+package com.ircarren.ghkanban.data.providers
 
 import com.ircarren.ghkanban.models.Repo
 

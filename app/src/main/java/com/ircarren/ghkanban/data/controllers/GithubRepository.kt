@@ -1,7 +1,7 @@
-package com.ircarren.ghkanban.controllers
+package com.ircarren.ghkanban.data.controllers
 
-import com.ircarren.ghkanban.interfaces.GitHubApiListIssuesFromUserNameAndRepoName
-import com.ircarren.ghkanban.interfaces.GithubApiListReposFromUserName
+import com.ircarren.ghkanban.data.interfaces.GitHubApiListIssuesFromUserNameAndRepoName
+import com.ircarren.ghkanban.data.interfaces.GithubApiListReposFromUserName
 import com.ircarren.ghkanban.models.Issue
 import com.ircarren.ghkanban.models.Repository
 import okhttp3.OkHttpClient
