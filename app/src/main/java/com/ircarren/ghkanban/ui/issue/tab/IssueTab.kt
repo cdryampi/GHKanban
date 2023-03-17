@@ -1,5 +1,6 @@
 package com.ircarren.ghkanban.ui.issue.tab
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -54,9 +56,9 @@ fun IssuesTab(
 
 @Composable
 fun TitleIssues(modifier: Modifier = Modifier, navController: NavController) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-
+    TopAppBar(
+        title = { Text(text = "GH Kanban", color = Color.White, style = MaterialTheme.typography.titleLarge) },
+        navigationIcon = {
             Icon(imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
                 tint = Color.White,
@@ -65,12 +67,8 @@ fun TitleIssues(modifier: Modifier = Modifier, navController: NavController) {
                     .clickable {
                         navController.popBackStack()
                     }
-
             )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(text = "GH Kanban", style = MaterialTheme.typography.titleLarge, color = Color.White)
-            // image from static resources
-        }
-
-    }
+        },
+        backgroundColor = Color.DarkGray,
+    )
 }

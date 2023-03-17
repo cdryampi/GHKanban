@@ -76,17 +76,22 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
                 _repoIdsLocal.value =
                     (_repoIdsLocal.value?.plus(it.key) ?: listOf(it.key)) as List<String>?
             }
+            map.values.distinct()
         } else {
 
         }
 
         //_repoIdsLocal.value = json?.let { Json.decodeFromString(it) }
+        // repos duplicados
+
+        _repoIdsLocal.value = _repoIdsLocal.value?.distinct()
+
     }
 
     fun deleteOneRefRepoLocal(RemoveRepo: String) {
+        _repoIdsLocal.value = _repoIdsLocal.value?.distinct()
         _repoIdsLocal.value = _repoIdsLocal.value?.minus(RemoveRepo)
         if (_repoIdsLocal.value == null) {
-            mapRepo.clear()
             _repoIdsLocal.value?.forEach {
 
                 if (it != null) {
@@ -95,6 +100,7 @@ class RepoLocalViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
         sharedPref.edit().remove("RepoIdsLocal").apply()
+        mapRepo.values.distinct()
         sharedPref.edit().putString("RepoIdsLocal", Json.encodeToString(mapRepo)).apply()
         loadRepoLocal()
     }

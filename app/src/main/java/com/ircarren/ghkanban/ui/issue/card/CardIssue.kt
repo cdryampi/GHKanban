@@ -17,7 +17,7 @@ import com.ircarren.ghkanban.ui.viewModel.IssueViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardIssue(modifier: Modifier = Modifier, issue: Issue, viewModel: IssueViewModel) {
+fun CardIssue(modifier: Modifier = Modifier, issue: Issue, viewModel: IssueViewModel, showNext:Boolean, showPrev:Boolean, onNextStateRequest: (Issue) -> Unit, onPrevStateRequest: (Issue) -> Unit) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -58,9 +58,7 @@ fun CardIssue(modifier: Modifier = Modifier, issue: Issue, viewModel: IssueViewM
                             modifier = Modifier
                                 .size(50.dp)
                                 .clickable {
-                                    viewModel.changeToNext(issue)
-                                    //println(issue)
-                                    println("BACKLOG ${viewModel.issueNextLocal.value}")
+                                    onNextStateRequest(issue)
                                 }
 
                         )
