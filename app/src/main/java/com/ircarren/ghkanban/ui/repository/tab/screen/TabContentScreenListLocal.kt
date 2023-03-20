@@ -3,6 +3,7 @@ package com.ircarren.ghkanban.ui.repository.tab.screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,12 +20,18 @@ import com.ircarren.ghkanban.ui.viewModel.RepoLocalViewModel
 @Composable
 fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLocalViewModel, navController: NavController) {
     GenericSpacer()
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
     ) {
+        items(data.size) { index ->
+            CardRepo(repo = Repository(data[index]), navController = navController, onClick = {
+                viewModel.deleteListReposToPreferences(Repository(data[index]))
+            }, isFavorite = b)
+            GenericSpacer()
+        }
+        /*
         data.forEach {
 
 
@@ -33,6 +40,6 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
                 viewModel.deleteListReposToPreferences(localRepo)
             }, isFavorite = b)
             GenericSpacer()
-        }
+        }*/
     }
 }

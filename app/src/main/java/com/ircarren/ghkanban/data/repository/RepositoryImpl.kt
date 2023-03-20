@@ -32,4 +32,16 @@ class RepositoryImpl @Inject constructor(
         preferences.deleteListReposToPreferences(repo)
     }
 
+    override suspend fun getIssuesFromGithub(repo: String): List<Issue> {
+        return preferences.getIssuesFromGithub(repo)
+    }
+
+    override suspend fun putIssueListToPreferencesBacklog(issueList: List<Issue>, repo: String) {
+        return preferences.putIssueListToPreferencesBacklog(issueList, repo)
+    }
+
+    override suspend fun getIssueListFromPreferences(repo: String): List<Issue> {
+        return preferences.getIssueListFromPreferences(repo)
+    }
+
 }

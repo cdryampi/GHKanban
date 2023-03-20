@@ -1,5 +1,6 @@
-package com.ircarren.ghkanban.domain
+package com.ircarren.ghkanban.domain.repos.add
 
+import com.ircarren.ghkanban.domain.Repository
 import javax.inject.Inject
 
 class PutRepoToPreferences @Inject constructor(

@@ -2,14 +2,15 @@ package com.ircarren.ghkanban.ui.viewModel
 
 
 import androidx.lifecycle.*
-import com.ircarren.ghkanban.domain.DeleteRepoFromProferences
-import com.ircarren.ghkanban.domain.GetListReposFromPreferences
-import com.ircarren.ghkanban.domain.GetReposForUser
-import com.ircarren.ghkanban.domain.PutRepoToPreferences
+import com.ircarren.ghkanban.domain.repos.delete.DeleteRepoFromProferences
+import com.ircarren.ghkanban.domain.repos.get.GetListReposFromPreferences
+import com.ircarren.ghkanban.domain.repos.get.GetReposForUser
+import com.ircarren.ghkanban.domain.repos.add.PutRepoToPreferences
 import com.ircarren.ghkanban.models.Repository
 import com.ircarren.ghkanban.ui.MyRepoEvent
 import com.ircarren.ghkanban.util.GITHUB_DEFAULT_USER
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,20 +44,18 @@ class RepoLocalViewModel @Inject constructor(
         fun addRepo(repo: Repository) {
             viewModelScope.launch {
                 putRepoToPreferences.invoke(repo = repo)
+            }.invokeOnCompletion {
+                getListReposFromPreferences()
             }
-            getListReposFromPreferences()
         }
         private fun getListReposFromPreferences() {
             viewModelScope.launch {
-                val listReposFromPreferences = getListReposFromPreferences.invoke()
-                val aux_list = mutableListOf<String>()
-                listReposFromPreferences.forEach { s ->
-                    val aux = s.replace("[", "").replace("]", "").trim()
-                    if (aux.isNotEmpty() && aux != " "){
-                        aux_list.add(aux)
-                    }
-                }
-                _listReposFromPreferences.value = aux_list
+                val list = async { getListReposFromPreferences.invoke() }
+                val listReposFromPreferences = list.await()
+                _listReposFromPreferences.value = listReposFromPreferences
+
+            }.invokeOnCompletion {
+                println("listReposFromPreferences: ${_listReposFromPreferences.value}")
             }
         }
         fun deleteListReposToPreferences(repo: Repository) {
@@ -64,8 +63,6 @@ class RepoLocalViewModel @Inject constructor(
                 //putListReposToPreferences.invoke(listOf())
                 deleteRepoFromProferences.invoke(repo)
                 getListReposFromPreferences()
-                println("deleteListReposToPreferences")
-                println("listReposFromPreferences: ${_listReposFromPreferences.value}")
             }
         }
 

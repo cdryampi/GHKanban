@@ -1,5 +1,6 @@
-package com.ircarren.ghkanban.domain
+package com.ircarren.ghkanban.domain.repos.delete
 
+import com.ircarren.ghkanban.domain.Repository
 import javax.inject.Inject
 
 class DeleteRepoFromProferences @Inject constructor(

@@ -22,7 +22,7 @@ class GithubRepository {
     private val githubApi: GithubApiListReposFromUserName by lazy {
         Retrofit.Builder()
             .baseUrl("https://api.github.com")
-            //.client(client)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(GithubApiListReposFromUserName::class.java)
@@ -31,7 +31,7 @@ class GithubRepository {
     private val githubApiClient: GitHubApiListIssuesFromUserNameAndRepoName by lazy {
         Retrofit.Builder()
             .baseUrl("https://api.github.com")
-            //.client(client)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(GitHubApiListIssuesFromUserNameAndRepoName::class.java)
