@@ -29,7 +29,9 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
 
 
             val localRepo = Repository(it)
-            CardRepo(localRepo, b, viewModel, navController)
+            CardRepo(repo = localRepo, navController = navController, onClick = {
+                viewModel.deleteListReposToPreferences(localRepo)
+            }, isFavorite = b)
             GenericSpacer()
         }
     }

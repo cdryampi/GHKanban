@@ -17,7 +17,12 @@ import com.ircarren.ghkanban.ui.viewModel.RepoLocalViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewModel, navController: NavController){
+fun CardRepo(
+    repo: Repository,
+    navController: NavController,
+    onClick: (String) -> Unit,
+    isFavorite: Boolean = true
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -26,33 +31,51 @@ fun CardRepo(repo: Repository, isFavorite: Boolean, viewModel: RepoLocalViewMode
             //navController.navigate("issues")
         }
     ) {
-        Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
 
-            Column(modifier = Modifier
-                .padding(16.dp)
-                .weight(1f)) {
-                repo.name?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "yampi", style = MaterialTheme.typography.bodyLarge)
-            }
+            var formatedName = repo.name?.replace("[", " ") ?: ""
+            formatedName = formatedName?.replace("]", " ").toString()
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                Box(modifier = Modifier.size(64.dp)){
-                    if (isFavorite){
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.DarkGray, modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxSize()
-                            .clickable {
-                                viewModel.saveRepoLocal(repo.name)
-                            })
-                    }else{
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = null, tint = Color.DarkGray, modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxSize()
-                            .clickable {
-                                viewModel.deleteOneRefRepoLocal(repo.name)
-                                println("delete")
-                            })
+            if (formatedName.length > 5) {
+
+
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .weight(1f)
+                ) {
+                    Text(text = formatedName, style = MaterialTheme.typography.titleLarge)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "yampi", style = MaterialTheme.typography.bodyLarge)
+                }
+
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Box(modifier = Modifier.size(64.dp)) {
+                        if (isFavorite) {
+                            Icon(imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = Color.DarkGray,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .fillMaxSize()
+                                    .clickable {
+                                        onClick(repo.name)
+                                    })
+                        } else {
+                            Icon(imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = Color.DarkGray,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .fillMaxSize()
+                                    .clickable {
+                                        onClick(repo.name)
+                                    })
+                        }
                     }
                 }
             }

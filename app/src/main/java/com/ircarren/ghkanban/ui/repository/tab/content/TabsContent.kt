@@ -15,19 +15,22 @@ import com.ircarren.ghkanban.ui.viewModel.RepoLocalViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TabsContent(modifier: Modifier = Modifier, pagerState: PagerState, navController: NavController) {
+fun TabsContent(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    navController: NavController,
+    viewModel: RepoLocalViewModel
+) {
 
-    val username = "cdryampi"
-    val viewModel = viewModel<RepoLocalViewModel>()
-    val myList: List<String> by viewModel.repoIdsLocal.observeAsState(listOf())
+    val gitHubRepositories by viewModel.listRepos.observeAsState(listOf())
 
-    val repos by viewModel.repos.observeAsState(emptyList())
+    val localStorageRepository by viewModel.listReposFromPreferences.observeAsState(emptyList())
 
 
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0 -> TabContentScreenList(data = repos, true, viewModel, navController = navController)
-            1 -> TabContentScreenListLocal(data = myList.toList(), false,viewModel, navController = navController)
+            0 -> TabContentScreenList(data = gitHubRepositories, true, viewModel, navController = navController)
+            1 -> TabContentScreenListLocal(data = localStorageRepository, false,viewModel, navController = navController)
 
         }
 

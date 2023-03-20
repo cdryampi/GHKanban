@@ -24,7 +24,13 @@ fun TabContentScreenList(data: List<Repository>, isFavorite: Boolean, viewModel:
             .verticalScroll(rememberScrollState())
     ) {
         data.forEach {
-            CardRepo(it, isFavorite, viewModel, navController)
+            CardRepo(repo = it, navController = navController, onClick = {
+                if (isFavorite) {
+                    viewModel.addRepo(Repository(name = it))
+                } else {
+                    //viewModel.addRepo(it)
+                }
+            }, isFavorite = isFavorite)
             GenericSpacer()
         }
     }
