@@ -143,7 +143,12 @@ class IssueViewModel @Inject constructor(
     }
 
     fun callAPI(){
-        getIssuesFromDataStoreLocal()
+        viewModelScope.launch {
+            clearIssueListFromModelView()
+        }.invokeOnCompletion {
+            getIssuesFromDataStoreLocal()
+        }
+
         if (_issues.value == null || _issues.value?.isEmpty() == true || _issues.value?.size == 0){
             getIssuesFromGithubLocal(getRepoName())
         }else{
