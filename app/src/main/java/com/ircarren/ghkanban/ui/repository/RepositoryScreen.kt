@@ -16,12 +16,17 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.ircarren.ghkanban.R
 import com.ircarren.ghkanban.ui.repository.tab.tabContainer.GenericTab
+import com.ircarren.ghkanban.ui.viewModel.RepoLocalViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun MainContainer(modifier: Modifier = Modifier, navController: NavController) {
+fun MainContainer(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: RepoLocalViewModel
+) {
     Column(modifier = Modifier.fillMaxSize()) {
-        GenericTab(navController = navController)
+        GenericTab(navController = navController, viewModel = viewModel)
     }
 }
 

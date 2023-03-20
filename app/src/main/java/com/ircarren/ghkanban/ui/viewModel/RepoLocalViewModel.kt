@@ -1,68 +1,84 @@
 package com.ircarren.ghkanban.ui.viewModel
 
-import android.app.Application
+
 import androidx.lifecycle.*
-import androidx.preference.PreferenceManager
-import com.ircarren.ghkanban.data.controllers.GithubRepository
-import com.ircarren.ghkanban.data.controllers.SharedLocalStorageManager
+import com.ircarren.ghkanban.domain.repos.delete.DeleteRepoFromProferences
+import com.ircarren.ghkanban.domain.repos.get.GetListReposFromPreferences
+import com.ircarren.ghkanban.domain.repos.get.GetReposForUser
+import com.ircarren.ghkanban.domain.repos.add.PutRepoToPreferences
 import com.ircarren.ghkanban.models.Repository
+import com.ircarren.ghkanban.ui.MyRepoEvent
+import com.ircarren.ghkanban.util.GITHUB_DEFAULT_USER
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-
-class RepoLocalViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val SharedPref = SharedLocalStorageManager(application)
+import javax.inject.Inject
 
 
-    // Repositorio local guardado
-    private val _repoIdsLocal = MutableLiveData<List<String>>()
-    val repoIdsLocal: LiveData<List<String>> = _repoIdsLocal
+@HiltViewModel
+class RepoLocalViewModel @Inject constructor(
+    private val getListReposFromPreferences: GetListReposFromPreferences,
+    private val putRepoToPreferences: PutRepoToPreferences,
+    private val deleteRepoFromProferences: DeleteRepoFromProferences,
+    private val getReposForUser: GetReposForUser
+) :ViewModel(){
 
+        // variables para el repositorio de github
 
-    // Repositorio
-    private val repository = GithubRepository()
-    private val _repos = MutableLiveData<List<Repository>>()
-    val repos: LiveData<List<Repository>> = _repos
+        private var _listRepos: MutableLiveData<List<Repository>> = MutableLiveData()
+        val listRepos: LiveData<List<Repository>> = _listRepos
 
+        // variables para el repositorio de preferencias
+        private var _listReposFromPreferences: MutableLiveData<List<String>> = MutableLiveData()
+        val listReposFromPreferences: LiveData<List<String>> = _listReposFromPreferences
 
-    init {
-        getReposForUser()
-        loadRepoLocal()
-    }
-
-    // cosas de github
-    fun getReposForUser(username: String="cdryampi") {
-        viewModelScope.launch {
-            try {
-                val deferred = async {
-                    repository.getReposForUser(username)
-                }
-                _repos.value = deferred.await()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
+        init {
+            getListReposFromGithub()
+            getListReposFromPreferences()
         }
-    }
 
+        fun onEvent(event: MyRepoEvent) {
+        }
 
-    // Guarda el repositorio en el shared preferences
-     fun saveRepoLocal(repo: String) {
-        SharedPref.saveRepoLocal(repo)
-        _repoIdsLocal.value = SharedPref.getRepoLocal()
-    }
+        fun addRepo(repo: Repository) {
+            viewModelScope.launch {
+                putRepoToPreferences.invoke(repo = repo)
+            }.invokeOnCompletion {
+                getListReposFromPreferences()
+            }
+        }
+        private fun getListReposFromPreferences() {
+            viewModelScope.launch {
+                val list = async { getListReposFromPreferences.invoke() }
+                val listReposFromPreferences = list.await()
+                _listReposFromPreferences.value = listReposFromPreferences
 
-     private fun loadRepoLocal() {
-        SharedPref.loadRepoLocal()
-        _repoIdsLocal.value = SharedPref.getRepoLocal()
-    }
+            }.invokeOnCompletion {
+                println("listReposFromPreferences: ${_listReposFromPreferences.value}")
+            }
+        }
+        fun deleteListReposToPreferences(repo: Repository) {
+            viewModelScope.launch {
+                //putListReposToPreferences.invoke(listOf())
+                deleteRepoFromProferences.invoke(repo)
+                getListReposFromPreferences()
+            }
+        }
 
-     fun deleteOneRefRepoLocal(RemoveRepo: String) {
-        SharedPref.deleteOneRefRepoLocal(RemoveRepo)
-        _repoIdsLocal.value = SharedPref.getRepoLocal()
-    }
+        private fun getListReposFromGithub() {
+            viewModelScope.launch {
+                val listReposFromGithub = getReposForUser.invoke(GITHUB_DEFAULT_USER)
+                _listRepos.value = listReposFromGithub
+                println(_listRepos.value)
+            }
+        }
+
+        fun GetListReposFromPreferences(): GetListReposFromPreferences {
+            return getListReposFromPreferences
+        }
+        fun GetListReposfromGithub(): GetReposForUser {
+            return getReposForUser
+        }
 
 }

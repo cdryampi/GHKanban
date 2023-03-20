@@ -17,11 +17,16 @@ import com.google.accompanist.pager.rememberPagerState
 import com.ircarren.ghkanban.ui.repository.Title
 import com.ircarren.ghkanban.ui.repository.GenericTabs
 import com.ircarren.ghkanban.ui.repository.tab.content.TabsContent
+import com.ircarren.ghkanban.ui.viewModel.RepoLocalViewModel
 
 @OptIn(ExperimentalPagerApi::class)
 @ExperimentalPagerApi
 @Composable
-fun GenericTab(modifier: Modifier = Modifier, navController: NavController) {
+fun GenericTab(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: RepoLocalViewModel
+) {
     val pagerState = rememberPagerState(pageCount = 2)
     Column(modifier = Modifier.background(Color.White)) {
         TopAppBar(backgroundColor = Color.DarkGray) {
@@ -35,6 +40,6 @@ fun GenericTab(modifier: Modifier = Modifier, navController: NavController) {
             }
         }
         GenericTabs(pagerState = pagerState)
-        TabsContent(pagerState = pagerState, navController = navController)
+        TabsContent(pagerState = pagerState, navController = navController, viewModel = viewModel)
     }
 }

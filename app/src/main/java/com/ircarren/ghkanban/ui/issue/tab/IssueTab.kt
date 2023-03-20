@@ -22,6 +22,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.ircarren.ghkanban.ui.issue.tab.content.issuesTabsContent
 import com.ircarren.ghkanban.ui.issue.tab.tabContainer.IssuesTabs
 import com.ircarren.ghkanban.ui.viewModel.IssueViewModel
+import dagger.hilt.android.scopes.ViewModelScoped
 
 @OptIn(ExperimentalPagerApi::class)
 @ExperimentalPagerApi
@@ -39,7 +40,7 @@ fun IssuesTab(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                TitleIssues(navController = navController)
+                TitleIssues(navController = navController, issuesViewModel = issuesViewModel)
             }
 
         }
@@ -55,9 +56,9 @@ fun IssuesTab(
 }
 
 @Composable
-fun TitleIssues(modifier: Modifier = Modifier, navController: NavController) {
+fun TitleIssues(modifier: Modifier = Modifier, navController: NavController, issuesViewModel: IssueViewModel) {
     TopAppBar(
-        title = { Text(text = "GH Kanban", color = Color.White, style = MaterialTheme.typography.titleLarge) },
+        title = { Text(text = "GH Kanban \\ ${issuesViewModel.getRepoName()}", color = Color.White, style = MaterialTheme.typography.titleLarge) },
         navigationIcon = {
             Icon(imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
@@ -65,6 +66,7 @@ fun TitleIssues(modifier: Modifier = Modifier, navController: NavController) {
                 modifier = Modifier
                     .size(25.dp)
                     .clickable {
+                        issuesViewModel.clearIssueListFromModelView()
                         navController.popBackStack()
                     }
             )
