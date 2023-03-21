@@ -125,7 +125,10 @@ class IssueViewModel @Inject constructor(
             val listIssuesFromGithub = getIssuesFromGithub.invoke(repoName)
             _issues.value = listIssuesFromGithub
             if (listIssuesFromGithub != null) {
-                _issueBacklogLocal.value = listIssuesFromGithub.filter { it.status?.name == IssueStatus.BACKLOG.name }
+                _issueBacklogLocal.value = listIssuesFromGithub.filter {
+
+                    it.status?.name == IssueStatus.BACKLOG.name
+                }
             }
         }
     }

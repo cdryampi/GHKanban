@@ -40,46 +40,45 @@ fun CardRepo(
             var formatedName = repo.name?.replace("[", " ") ?: ""
             formatedName = formatedName?.replace("]", " ").toString()
 
-            if (formatedName.length > 5) {
 
 
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .weight(1f)
-                ) {
-                    Text(text = formatedName, style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "yampi", style = MaterialTheme.typography.bodyLarge)
-                }
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(1f)
+            ) {
+                Text(text = formatedName, style = MaterialTheme.typography.titleLarge)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "yampi", style = MaterialTheme.typography.bodyLarge)
+            }
 
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Box(modifier = Modifier.size(64.dp)) {
-                        if (isFavorite) {
-                            Icon(imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                                tint = Color.DarkGray,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .fillMaxSize()
-                                    .clickable {
-                                        onClick(repo.name)
-                                    })
-                        } else {
-                            Icon(imageVector = Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = Color.DarkGray,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .fillMaxSize()
-                                    .clickable {
-                                        onClick(repo.name)
-                                    })
-                        }
+            Column(modifier = Modifier.padding(16.dp)) {
+                Box(modifier = Modifier.size(64.dp)) {
+                    if (isFavorite) {
+                        Icon(imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color.DarkGray,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxSize()
+                                .clickable {
+                                    onClick(repo.name)
+                                })
+                    } else {
+                        Icon(imageVector = Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = Color.DarkGray,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxSize()
+                                .clickable {
+                                    onClick(repo.name)
+                                })
                     }
                 }
             }
         }
     }
+
 
 }

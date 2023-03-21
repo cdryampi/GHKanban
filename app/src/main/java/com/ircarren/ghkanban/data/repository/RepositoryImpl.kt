@@ -10,15 +10,6 @@ import javax.inject.Inject
 class RepositoryImpl @Inject constructor(
     private val preferences: Preferences,
 ) : Repository {
-    override suspend fun getReposForUser(username: String?): List<com.ircarren.ghkanban.models.Repository>? {
-        return preferences.getReposForUser(username = GITHUB_DEFAULT_USER)
-
-    }
-
-    override suspend fun getReIssueForUser(username: String, repoName: String): List<Issue> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun putListReposToPreferences(repo: com.ircarren.ghkanban.models.Repository) {
         preferences.putRepoToPreferences(repo)
     }
@@ -32,9 +23,7 @@ class RepositoryImpl @Inject constructor(
         preferences.deleteListReposToPreferences(repo)
     }
 
-    override suspend fun getIssuesFromGithub(repo: String): List<Issue> {
-        return preferences.getIssuesFromGithub(repo)
-    }
+
 
     override suspend fun putIssueListToPreferencesBacklog(issueList: List<Issue>, repo: String) {
         return preferences.putIssueListToPreferencesBacklog(issueList, repo)

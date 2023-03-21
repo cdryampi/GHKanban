@@ -56,6 +56,10 @@ class RepoLocalViewModel @Inject constructor(
 
             }.invokeOnCompletion {
                 println("listReposFromPreferences: ${_listReposFromPreferences.value}")
+                _listRepos.value = _listRepos.value?.filter { repo ->
+                    println("repo.name: ${repo.name}")
+                    repo.name.length > 5
+                }
             }
         }
         fun deleteListReposToPreferences(repo: Repository) {

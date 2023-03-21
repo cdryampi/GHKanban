@@ -20,16 +20,6 @@ private val Context.dataStore by preferencesDataStore(name = KEY_SHARED_PREF)
 class PreferencesImpl @Inject constructor(
     private val context: Context
 ) : Preferences {
-    override suspend fun getReposForUser(username: String): List<Repository> {
-        val githubRepository = GithubRepository()
-        return githubRepository.getReposForUser(username)
-
-    }
-
-    override suspend fun getReIssueForUser(username: String, repoName: String): List<Issue> {
-        TODO("Not yet implemented")
-    }
-
 
     override suspend fun putRepoToPreferences(repo: com.ircarren.ghkanban.models.Repository) {
         val preferenceKey = stringPreferencesKey(KEY_SHARED_PREF)
@@ -51,11 +41,6 @@ class PreferencesImpl @Inject constructor(
             println("preferences[preferenceKey] ${preferences[preferenceKey]}")
 
         }
-    }
-
-    override suspend fun getIssuesFromGithub(repo: String): List<Issue> {
-        val githubRepository = GithubRepository()
-        return githubRepository.getReIssueForUser(GITHUB_DEFAULT_USER, repo)
     }
 
     override suspend fun putIssueListToPreferencesBacklog(issueList: List<Issue>, repo: String) {

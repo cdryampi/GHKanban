@@ -26,10 +26,13 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
             .padding(16.dp)
     ) {
         items(data.size) { index ->
-            CardRepo(repo = Repository(data[index]), navController = navController, onClick = {
-                viewModel.deleteListReposToPreferences(Repository(data[index]))
-            }, isFavorite = b)
-            GenericSpacer()
+            if (data[index].length > 2){
+                CardRepo(repo = Repository(data[index]), navController = navController, onClick = {
+                    viewModel.deleteListReposToPreferences(Repository(data[index]))
+                }, isFavorite = b)
+                GenericSpacer()
+            }
+
         }
         /*
         data.forEach {
