@@ -1,6 +1,7 @@
 package com.ircarren.ghkanban.ui.viewModel
 
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ircarren.ghkanban.data.enums.IssueStatus
 import com.ircarren.ghkanban.domain.issue.add.PutIssueListToPreferencesBacklog
 import com.ircarren.ghkanban.domain.issue.get.GetIssueListFromPreferences
@@ -150,15 +151,12 @@ class IssueViewModel @Inject constructor(
             clearIssueListFromModelView()
         }.invokeOnCompletion {
             getIssuesFromDataStoreLocal()
-        }
 
-        if (_issues.value == null || _issues.value?.isEmpty() == true || _issues.value?.size == 0){
-            getIssuesFromGithubLocal(getRepoName())
-        }else{
-            println("No se llama a la API")
         }
     }
-
+    init {
+        callAPI()
+    }
     // CRUD
     private fun getIssuesFromDataStoreLocal() {
         viewModelScope.launch {
@@ -166,6 +164,10 @@ class IssueViewModel @Inject constructor(
             _issues.value = listIssuesFromDataStore
             println("getIssuesFromDataStoreLocal $listIssuesFromDataStore")
         }.invokeOnCompletion {
+            if (_issues.value == null || _issues.value?.isEmpty() == true || _issues.value?.size == 0){
+                getIssuesFromGithubLocal(getRepoName())
+            }
+
             if (_issues.value != null) {
                 _issueBacklogLocal.value = _issues.value?.filter { it.status?.name == IssueStatus.BACKLOG.name }
                 _issueNextLocal.value = _issues.value?.filter { it.status?.name == IssueStatus.NEXT.name }
@@ -179,8 +181,20 @@ class IssueViewModel @Inject constructor(
     private fun putIssueListToPreferences(){
         viewModelScope.launch {
             putIssueListToPreferences.invoke(_issueBacklogLocal.value ?: listOf(), getRepoName())
+        }.invokeOnCompletion {
+            println("putIssueListToPreferences completed")
+        }
+        viewModelScope.launch {
             putIssueListToPreferences.invoke(_issueNextLocal.value ?: listOf(), getRepoName())
+        }.invokeOnCompletion {
+            println("putIssueListToPreferences completed")
+        }
+        viewModelScope.launch {
             putIssueListToPreferences.invoke(_issueInProgressLocal.value ?: listOf(), getRepoName())
+        }.invokeOnCompletion {
+            println("putIssueListToPreferences completed")
+        }
+        viewModelScope.launch {
             putIssueListToPreferences.invoke(_issueDoneLocal.value ?: listOf(), getRepoName())
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")

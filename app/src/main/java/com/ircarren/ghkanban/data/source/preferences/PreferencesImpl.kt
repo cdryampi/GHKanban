@@ -4,14 +4,16 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.ircarren.ghkanban.data.controllers.GithubRepository
+import com.ircarren.ghkanban.data.enums.IssueStatus
+import com.ircarren.ghkanban.data.localDataBase.DataBaseBuilder
 import com.ircarren.ghkanban.models.Repository
 import com.ircarren.ghkanban.models.Issue
-import com.ircarren.ghkanban.util.GITHUB_DEFAULT_USER
 import com.ircarren.ghkanban.util.KEY_REPO_ISSUES
 import com.ircarren.ghkanban.util.KEY_SHARED_PREF
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -22,6 +24,7 @@ class PreferencesImpl @Inject constructor(
 ) : Preferences {
 
     override suspend fun putRepoToPreferences(repo: com.ircarren.ghkanban.models.Repository) {
+
         val preferenceKey = stringPreferencesKey(KEY_SHARED_PREF)
         context.dataStore.edit { preferences ->
 
@@ -39,12 +42,67 @@ class PreferencesImpl @Inject constructor(
                 println("Reference added")
             }
             println("preferences[preferenceKey] ${preferences[preferenceKey]}")
-
         }
     }
 
     override suspend fun putIssueListToPreferencesBacklog(issueList: List<Issue>, repo: String) {
-        val preferenceKey = stringPreferencesKey(repo + KEY_REPO_ISSUES)
+
+        val issueDaoController = DataBaseBuilder.getInstance(context).issueDao()
+
+
+        println("listfromlocalDB ${issueList.toList()}")
+        var issueListToInsert = mutableListOf<com.ircarren.ghkanban.data.localDataBase.dao.Issue>()
+
+        issueList.forEach { _issue ->
+            val newIssue = _issue.title?.let {
+                _issue.body?.let { it1 ->
+                    _issue.status?.let { it2 ->
+                        com.ircarren.ghkanban.data.localDataBase.dao.Issue(
+                            title = it,
+                            body = _issue.body,
+                            status = it1,
+                            repo = repo
+                        )
+                    }
+                }
+            }
+
+            if (newIssue != null) {
+                issueListToInsert.add(newIssue)
+            }
+        }
+
+
+        withContext(Dispatchers.IO) {
+            issueListToInsert.forEach { _issue ->
+                try {
+                    issueDaoController.insertOne(
+                        _issue.title,
+                        _issue.body,
+                        _issue.status,
+                        _issue.repo
+                    )
+                } catch (e: Exception) {
+                    try {
+                        issueDaoController.updateOne(
+                            _issue.title,
+                            _issue.status,
+                            _issue.repo
+                        )
+                        println("updated")
+                    } catch (e: Exception) {
+                        println("error ${e.message}")
+                    }
+                    println("error ${e.message}")
+                }
+
+
+            }
+
+        }
+
+
+        /*val preferenceKey = stringPreferencesKey(repo + KEY_REPO_ISSUES)
 
         val newListIssues: MutableList<String> = mutableListOf()
         context.dataStore.edit { preferences ->
@@ -54,11 +112,38 @@ class PreferencesImpl @Inject constructor(
             }
             preferences[preferenceKey] = newListIssues.joinToString(",")
             println("preferences[preferenceKey] ${preferences[preferenceKey]}")
-        }
-
+        }*/
     }
 
     override suspend fun getIssueListFromPreferences(repo: String): List<Issue> {
+        val issueDaoController = DataBaseBuilder.getInstance(context).issueDao()
+        val allIssues = withContext(Dispatchers.IO) {
+            issueDaoController.loadAllByRepo(repo)
+        }
+        var issueList = mutableListOf<Issue>()
+        allIssues.forEach { _issue ->
+            var status = IssueStatus.BACKLOG
+            when (_issue.status) {
+                "BACKLOG" -> status = IssueStatus.BACKLOG
+                "NEXT" -> status = IssueStatus.NEXT
+                "INPROGRESS" -> status = IssueStatus.IN_PROGRESS
+                "DONE" -> status = IssueStatus.DONE
+            }
+            val newIssue = _issue.title?.let {
+                _issue.body?.let { it1 ->
+                    Issue(
+                        title = it,
+                        status = status,
+                        body = it1,
+                    )
+                }
+            }
+
+            if (newIssue != null) {
+                issueList.add(newIssue)
+            }
+        }
+        /*
         val preferenceKey = stringPreferencesKey(repo + KEY_REPO_ISSUES)
 
         val preferences = context.dataStore.data.toList()
@@ -70,6 +155,7 @@ class PreferencesImpl @Inject constructor(
             }
         }
         println("issueList: $issueList")
+        return issueList*/
         return issueList
     }
 
@@ -91,15 +177,10 @@ class PreferencesImpl @Inject constructor(
 
         val preferenceKey = stringPreferencesKey(KEY_SHARED_PREF)
 
-        val child_preferenceKey = stringPreferencesKey(repo.name + KEY_REPO_ISSUES)
+        val issueDaoController = DataBaseBuilder.getInstance(context).issueDao()
 
-        if (context.dataStore.data.first()[child_preferenceKey] != null){
-            context.dataStore.edit {
-                it.remove(child_preferenceKey)
-            }
-
-        }else{
-            println("No existe la referencia")
+        withContext(Dispatchers.IO) {
+            issueDaoController.deleteAllByRepo(repo.name)
         }
 
         context.dataStore.edit { preferences ->
