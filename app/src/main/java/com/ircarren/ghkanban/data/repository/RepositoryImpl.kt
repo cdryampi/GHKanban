@@ -1,5 +1,6 @@
 package com.ircarren.ghkanban.data.repository
 
+import com.ircarren.ghkanban.data.enums.IssueStatus
 import com.ircarren.ghkanban.data.source.preferences.Preferences
 import com.ircarren.ghkanban.domain.Repository
 
@@ -25,8 +26,8 @@ class RepositoryImpl @Inject constructor(
 
 
 
-    override suspend fun putIssueListToPreferencesBacklog(issueList: List<Issue>, repo: String) {
-        return preferences.putIssueListToPreferencesBacklog(issueList, repo)
+    override suspend fun putIssueListToPreferencesBacklog(issueList: List<Issue>, repo: String, status: IssueStatus) {
+        return preferences.putIssueListToPreferencesBacklog(issueList, repo, status)
     }
 
     override suspend fun getIssueListFromPreferences(repo: String): List<Issue> {

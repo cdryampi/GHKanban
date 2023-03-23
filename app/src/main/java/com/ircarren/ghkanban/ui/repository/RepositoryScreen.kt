@@ -36,7 +36,7 @@ fun MainContainer(
 @Composable
 fun Title(modifier: Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center){
             Text(text = "GH Kanban", style = MaterialTheme.typography.titleLarge, color = Color.White)
             // image from static resources
             Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray).height(80.dp), contentAlignment = Alignment.Center) {

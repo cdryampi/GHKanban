@@ -23,7 +23,8 @@ fun TabContentScreenListLocal(data: List<String>, b: Boolean, viewModel: RepoLoc
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+
     ) {
         items(data.size) { index ->
             if (data[index].length > 2){

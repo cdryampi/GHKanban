@@ -180,22 +180,22 @@ class IssueViewModel @Inject constructor(
 
     private fun putIssueListToPreferences(){
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueBacklogLocal.value ?: listOf(), getRepoName())
+            putIssueListToPreferences.invoke(_issueBacklogLocal.value ?: listOf(), getRepoName(), IssueStatus.BACKLOG)
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueNextLocal.value ?: listOf(), getRepoName())
+            putIssueListToPreferences.invoke(_issueNextLocal.value ?: listOf(), getRepoName(), IssueStatus.NEXT)
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueInProgressLocal.value ?: listOf(), getRepoName())
+            putIssueListToPreferences.invoke(_issueInProgressLocal.value ?: listOf(), getRepoName(), IssueStatus.IN_PROGRESS)
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueDoneLocal.value ?: listOf(), getRepoName())
+            putIssueListToPreferences.invoke(_issueDoneLocal.value ?: listOf(), getRepoName(), IssueStatus.DONE)
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }

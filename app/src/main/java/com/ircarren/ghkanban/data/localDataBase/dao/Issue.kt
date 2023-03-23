@@ -8,6 +8,7 @@ import com.ircarren.ghkanban.data.enums.IssueStatus
 
 @Entity
 data class Issue(
+    // key for issue combination + issue_id
     @PrimaryKey val title: String,
     @ColumnInfo(name="body") val body: String,
     @ColumnInfo(name="status") val status: String,
