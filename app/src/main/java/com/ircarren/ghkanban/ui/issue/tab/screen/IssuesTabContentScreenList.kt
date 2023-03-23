@@ -31,29 +31,54 @@ fun IssuesTabContentScreenList(
             val issue = data[index]
             var showNext = true
             var showPrev = true
+            if (issue.state !=  "open" && issue.state != "closed"){
+                when(issue.state){
+                    IssueStatus.BACKLOG.name ->{
+                        showNext = true
+                        showPrev = false
+                    }
 
-            when(issue.status?.name){
-                IssueStatus.BACKLOG.name ->{
-                    showNext = true
-                    showPrev = false
+                    IssueStatus.NEXT.name ->{
+                        showNext = true
+                        showPrev = true
+                    }
+
+                    IssueStatus.IN_PROGRESS.name ->{
+                        showNext = true
+                        showPrev = true
+                    }
+
+                    IssueStatus.DONE.name ->{
+                        showNext = false
+                        showPrev = true
+                    }
+
                 }
+            }else{
+                when(issue.state){
+                    IssueStatus.BACKLOG.name ->{
+                        showNext = true
+                        showPrev = false
+                    }
 
-                IssueStatus.NEXT.name ->{
-                    showNext = true
-                    showPrev = true
+                    IssueStatus.NEXT.name ->{
+                        showNext = true
+                        showPrev = true
+                    }
+
+                    IssueStatus.IN_PROGRESS.name ->{
+                        showNext = true
+                        showPrev = true
+                    }
+
+                    IssueStatus.DONE.name ->{
+                        showNext = false
+                        showPrev = true
+                    }
+
                 }
-
-                IssueStatus.IN_PROGRESS.name ->{
-                    showNext = true
-                    showPrev = true
-                }
-
-                IssueStatus.DONE.name ->{
-                    showNext = false
-                    showPrev = true
-                }
-
             }
+
 
             CardIssue(
                 issue = data[index],

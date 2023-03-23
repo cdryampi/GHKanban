@@ -5,38 +5,24 @@ import com.ircarren.ghkanban.data.localDataBase.dao.Issue
 
 @Dao
 interface IssueDao {
-    // select
 
+    // select
     @Query("SELECT * FROM issue")
     suspend fun getAll(): List<Issue>
 
     // select by repo
-
     @Query("SELECT * FROM issue WHERE repo = :repo")
     suspend fun loadAllByRepo(repo: String): List<Issue>
+    @Query("SELECT * FROM issue WHERE id = :id")
+    suspend fun loadById(id: Int): Issue
 
-    @Query("INSERT INTO issue (title, body, status, repo) VALUES (:title, :body, :status, :repo)")
-    suspend fun insertOne(title: String, body: String, status: String, repo: String)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertOne(issue: Issue)
 
     @Query("DELETE FROM issue WHERE repo = :repo")
     suspend fun deleteAllByRepo(repo: String)
 
-    @Query("UPDATE issue SET status = :status WHERE title = :title AND repo = :repo")
-    suspend fun updateOne(title: String, status: String, repo: String)
-/*
-    // update
     @Update
-    fun updateIssue(issue: Issue)
+    suspend fun updateOne(issue: Issue)
 
-    // insert one
-    @Insert
-    suspend fun insert(issue: Issue)
-
-    // insert all
-    @Insert
-
-
-    // delete
-    @Delete
-    suspend fun delete(user: Issue)*/
 }

@@ -40,15 +40,16 @@ class IssueViewModel @Inject constructor(
     // funcion para cambiar de estado de issue al siguiente
     fun changeToNext(issue: Issue) {
         viewModelScope.launch {
-            when (issue.status?.name) {
-                IssueStatus.BACKLOG.name -> {
-                    issue.status = IssueStatus.NEXT
+            when (issue.state) {
+                IssueStatus.BACKLOG.name, "open", "closed" -> {
+                    issue.state = IssueStatus.NEXT.name
                     _issueBacklogLocal.value =
                         (_issueBacklogLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
 
                     if (_issueBacklogLocal.value?.contains(issue) == true) {
                         _issueBacklogLocal.value =
-                            (_issueBacklogLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
+                            (_issueBacklogLocal.value?.minus(issue)
+                                ?: listOf(issue)) as List<Issue>?
                     }
                     _issueNextLocal.value =
                         (_issueNextLocal.value?.plus(issue) ?: listOf(issue)) as List<Issue>?
@@ -58,7 +59,7 @@ class IssueViewModel @Inject constructor(
                     println("changeToNext")
                 }
                 IssueStatus.NEXT.name -> {
-                    issue.status = IssueStatus.IN_PROGRESS
+                    issue.state = IssueStatus.IN_PROGRESS.name
                     _issueNextLocal.value =
                         (_issueNextLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
                     _issueInProgressLocal.value =
@@ -66,7 +67,7 @@ class IssueViewModel @Inject constructor(
                     println("changeToInProgress")
                 }
                 IssueStatus.IN_PROGRESS.name -> {
-                    issue.status = IssueStatus.DONE
+                    issue.state = IssueStatus.DONE.name
                     _issueInProgressLocal.value =
                         (_issueInProgressLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
                     _issueDoneLocal.value =
@@ -84,25 +85,25 @@ class IssueViewModel @Inject constructor(
     // funcion para cambiar de estado de issue al anterior
     fun changeToPrev(issue: Issue) {
         viewModelScope.launch {
-            when(issue.status?.name){
-                IssueStatus.NEXT.name->{
-                    issue.status = IssueStatus.BACKLOG
+            when (issue.state) {
+                IssueStatus.NEXT.name -> {
+                    issue.state = IssueStatus.BACKLOG.name
                     _issueNextLocal.value =
                         (_issueNextLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
                     _issueBacklogLocal.value =
                         (_issueBacklogLocal.value?.plus(issue) ?: listOf(issue)) as List<Issue>?
                     println("changetoBacklog")
                 }
-                IssueStatus.IN_PROGRESS.name->{
-                    issue.status = IssueStatus.NEXT
+                IssueStatus.IN_PROGRESS.name -> {
+                    issue.state = IssueStatus.NEXT.name
                     _issueInProgressLocal.value =
                         (_issueInProgressLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
                     _issueNextLocal.value =
                         (_issueNextLocal.value?.plus(issue) ?: listOf(issue)) as List<Issue>?
                     println("changeToNextInProgress")
                 }
-                IssueStatus.DONE.name->{
-                    issue.status = IssueStatus.IN_PROGRESS
+                IssueStatus.DONE.name -> {
+                    issue.state = IssueStatus.IN_PROGRESS.name
                     _issueDoneLocal.value =
                         (_issueDoneLocal.value?.minus(issue) ?: listOf(issue)) as List<Issue>?
                     _issueInProgressLocal.value =
@@ -125,12 +126,15 @@ class IssueViewModel @Inject constructor(
         viewModelScope.launch {
             val listIssuesFromGithub = getIssuesFromGithub.invoke(repoName)
             _issues.value = listIssuesFromGithub
+
             if (listIssuesFromGithub != null) {
                 _issueBacklogLocal.value = listIssuesFromGithub.filter {
 
-                    it.status?.name == IssueStatus.BACKLOG.name
+                    it.state == "open" || it.state == "closed"
                 }
             }
+
+            println("getIssuesFromGithubLocal $listIssuesFromGithub")
         }
     }
 
@@ -142,11 +146,12 @@ class IssueViewModel @Inject constructor(
     fun setRepoName(repoName: String) {
         savedStateHandle["repoName"] = repoName
     }
+
     private fun getRepoNameFromParams(): String {
         return savedStateHandle["repoName"] ?: "a"
     }
 
-    fun callAPI(){
+    fun callAPI() {
         viewModelScope.launch {
             clearIssueListFromModelView()
         }.invokeOnCompletion {
@@ -154,54 +159,77 @@ class IssueViewModel @Inject constructor(
 
         }
     }
+
     init {
         callAPI()
     }
+
     // CRUD
     private fun getIssuesFromDataStoreLocal() {
         viewModelScope.launch {
             val listIssuesFromDataStore = getIssueListFromPreferences.invoke(getRepoName())
             _issues.value = listIssuesFromDataStore
+            _issues.value = _issues.value?.distinct()
             println("getIssuesFromDataStoreLocal $listIssuesFromDataStore")
         }.invokeOnCompletion {
-            if (_issues.value == null || _issues.value?.isEmpty() == true || _issues.value?.size == 0){
+            if (_issues.value == null || _issues.value?.isEmpty() == true || _issues.value?.size == 0) {
                 getIssuesFromGithubLocal(getRepoName())
+                println("callAPI")
             }
 
             if (_issues.value != null) {
-                _issueBacklogLocal.value = _issues.value?.filter { it.status?.name == IssueStatus.BACKLOG.name }
-                _issueNextLocal.value = _issues.value?.filter { it.status?.name == IssueStatus.NEXT.name }
-                _issueInProgressLocal.value = _issues.value?.filter { it.status?.name == IssueStatus.IN_PROGRESS.name }
-                _issueDoneLocal.value = _issues.value?.filter { it.status?.name == IssueStatus.DONE.name }
+                _issueBacklogLocal.value = _issues.value?.distinct()
+                _issueBacklogLocal.value =
+                    _issues.value?.filter { it.state == IssueStatus.BACKLOG.name }
+                _issueNextLocal.value = _issues.value?.filter { it.state == IssueStatus.NEXT.name }
+                _issueInProgressLocal.value =
+                    _issues.value?.filter { it.state == IssueStatus.IN_PROGRESS.name }
+                _issueDoneLocal.value = _issues.value?.filter { it.state == IssueStatus.DONE.name }
             }
         }
     }
 
 
-    private fun putIssueListToPreferences(){
+    private fun putIssueListToPreferences() {
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueBacklogLocal.value ?: listOf(), getRepoName(), IssueStatus.BACKLOG)
+            putIssueListToPreferences.invoke(
+                _issueBacklogLocal.value ?: listOf(),
+                getRepoName(),
+                IssueStatus.BACKLOG
+            )
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueNextLocal.value ?: listOf(), getRepoName(), IssueStatus.NEXT)
+            putIssueListToPreferences.invoke(
+                _issueNextLocal.value ?: listOf(),
+                getRepoName(),
+                IssueStatus.NEXT
+            )
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueInProgressLocal.value ?: listOf(), getRepoName(), IssueStatus.IN_PROGRESS)
+            putIssueListToPreferences.invoke(
+                _issueInProgressLocal.value ?: listOf(),
+                getRepoName(),
+                IssueStatus.IN_PROGRESS
+            )
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
         viewModelScope.launch {
-            putIssueListToPreferences.invoke(_issueDoneLocal.value ?: listOf(), getRepoName(), IssueStatus.DONE)
+            putIssueListToPreferences.invoke(
+                _issueDoneLocal.value ?: listOf(),
+                getRepoName(),
+                IssueStatus.DONE
+            )
         }.invokeOnCompletion {
             println("putIssueListToPreferences completed")
         }
     }
 
-    fun clearIssueListFromModelView(){
+    fun clearIssueListFromModelView() {
         viewModelScope.launch {
             _issues.value = listOf()
             _issueBacklogLocal.value = listOf()
@@ -213,7 +241,6 @@ class IssueViewModel @Inject constructor(
         }
 
     }
-
 
 
 }

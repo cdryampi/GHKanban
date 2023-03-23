@@ -30,9 +30,6 @@ fun MainContainer(
     }
 }
 
-
-
-
 @Composable
 fun Title(modifier: Modifier = Modifier) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

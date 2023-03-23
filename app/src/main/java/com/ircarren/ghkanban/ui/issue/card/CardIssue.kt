@@ -46,12 +46,15 @@ fun CardIssue(
                 issue.title?.let { Text(text = it, style = MaterialTheme.typography.titleLarge) }
                 Spacer(modifier = Modifier.height(16.dp))
                 issue.body?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
-                issue.status?.let {
-                    Text(
-                        text = it.name,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                if (issue.state != null) {
+                    issue.state?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                 }
+
             }
             Column(modifier = Modifier.padding(16.dp)) {
                 if (showNext) {

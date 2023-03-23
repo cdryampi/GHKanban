@@ -3,9 +3,9 @@ package com.ircarren.ghkanban.models
 import com.ircarren.ghkanban.data.enums.IssueStatus
 
 data class Issue(
-    val title: String ? = null,
+    var id: Int ? = null,
+    var title: String ? = null,
     val htmlUrl: String ? = null,
-    val state: String ? = null,
-    val body: String ? = null,
-    var status: IssueStatus? = IssueStatus.BACKLOG
+    var state: String ? = null,
+    var body: String ? = null
 )

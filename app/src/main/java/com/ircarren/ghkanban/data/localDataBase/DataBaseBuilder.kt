@@ -13,7 +13,7 @@ object DataBaseBuilder {
                 INSTANCE = Room.databaseBuilder(
                     context.applicationContext,
                     AppDataBase::class.java, "ghkanban.db"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
             }
         }
         return INSTANCE!!
